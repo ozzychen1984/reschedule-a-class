@@ -184,12 +184,18 @@
       const payload = { action: action, ...data };
       const response = await fetch(API_URL, {
         method: 'POST',
-        // 跨網域請求需要設定為 text/plain 避免觸發 CORS 預檢失敗
         headers: {
           'Content-Type': 'text/plain;charset=utf-8',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        redirect: 'follow' // ★ 新增這行：確保跟隨 Google 的網址跳轉
       });
+      
+      // 若伺服器回傳的不是正常的 HTTP 狀態碼
+      if (!response.ok) {
+          throw new Error('網路連線或伺服器發生異常 (Status: ' + response.status + ')');
+      }
+      
       return await response.json();
     }
 
